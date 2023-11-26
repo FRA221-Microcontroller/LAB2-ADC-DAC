@@ -396,6 +396,8 @@ static void MX_GPIO_Init(void)
 void ADC_Read_blocking()
 {
 	static uint32_t TimeStamp = 0;
+	LSB = Voltage_Ref / ADC_Resolution;
+
 	if( HAL_GetTick()<TimeStamp) return;
 
 	TimeStamp = HAL_GetTick()+500;
@@ -406,7 +408,6 @@ void ADC_Read_blocking()
 		HAL_ADC_Start(&hadc1);
 		HAL_ADC_PollForConversion(&hadc1, 100);
 		ADC1_Channel[i].data = HAL_ADC_GetValue(&hadc1);
-		LSB = Voltage_Ref / ADC_Resolution;
 		Voltage_Read[i] = LSB * ADC1_Channel[i].data;
 		HAL_ADC_Stop(&hadc1);
 	}
