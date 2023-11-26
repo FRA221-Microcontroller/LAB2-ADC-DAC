@@ -47,7 +47,38 @@ DAC_HandleTypeDef hdac1;
 UART_HandleTypeDef hlpuart1;
 
 /* USER CODE BEGIN PV */
+struct _ADC_tag
+{
+	ADC_ChannelConfTypeDef Config;
+	uint16_t data;
+};
 
+struct _ADC_tag ADC1_Channel[2] =
+{
+	{
+		.Config.Channel = ADC_CHANNEL_1,
+		.Config.Rank = ADC_REGULAR_RANK_1,
+		.Config.SamplingTime = ADC_SAMPLETIME_640CYCLES_5,
+		.Config.SingleDiff = ADC_SINGLE_ENDED,
+		.Config.OffsetNumber = ADC_OFFSET_NONE,
+		.Config.Offset = 0,
+		.data = 0
+	},
+	{
+		.Config.Channel = ADC_CHANNEL_TEMPSENSOR_ADC1,
+		.Config.Rank = ADC_REGULAR_RANK_1,
+		.Config.SamplingTime = ADC_SAMPLETIME_640CYCLES_5,
+		.Config.SingleDiff = ADC_SINGLE_ENDED,
+		.Config.OffsetNumber = ADC_OFFSET_NONE,
+		.Config.Offset = 0,
+		.data = 0
+	}
+};
+
+uint16_t ADC_Resolution = 1024;
+float Voltage_Read[2];
+float Voltage_Ref =  3.3;
+float LSB;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,7 +88,7 @@ static void MX_LPUART1_UART_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_DAC1_Init(void);
 /* USER CODE BEGIN PFP */
-
+void ADC_Read_blocking();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -107,6 +138,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  ADC_Read_blocking();
   }
   /* USER CODE END 3 */
 }
@@ -361,7 +393,24 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void ADC_Read_blocking()
+{
+	static uint32_t TimeStamp = 0;
+	if( HAL_GetTick()<TimeStamp) return;
 
+	TimeStamp = HAL_GetTick()+500;
+
+	for(int i=0;i<2;i++)
+	{
+		HAL_ADC_ConfigChannel(&hadc1, &ADC1_Channel[i].Config);
+		HAL_ADC_Start(&hadc1);
+		HAL_ADC_PollForConversion(&hadc1, 100);
+		ADC1_Channel[i].data = HAL_ADC_GetValue(&hadc1);
+		LSB = Voltage_Ref / ADC_Resolution;
+		Voltage_Read[i] = LSB * ADC1_Channel[i].data;
+		HAL_ADC_Stop(&hadc1);
+	}
+}
 /* USER CODE END 4 */
 
 /**
