@@ -53,33 +53,22 @@ struct _ADC_tag
 	uint16_t data;
 };
 
-struct _ADC_tag ADC1_Channel[2] =
+struct _ADC_tag ADC1_Channel =
 {
-	{
-		.Config.Channel = ADC_CHANNEL_1,
-		.Config.Rank = ADC_REGULAR_RANK_1,
-		.Config.SamplingTime = ADC_SAMPLETIME_640CYCLES_5,
-		.Config.SingleDiff = ADC_SINGLE_ENDED,
-		.Config.OffsetNumber = ADC_OFFSET_NONE,
-		.Config.Offset = 0,
-		.data = 0
-	},
-	{
-		.Config.Channel = ADC_CHANNEL_TEMPSENSOR_ADC1,
-		.Config.Rank = ADC_REGULAR_RANK_1,
-		.Config.SamplingTime = ADC_SAMPLETIME_640CYCLES_5,
-		.Config.SingleDiff = ADC_SINGLE_ENDED,
-		.Config.OffsetNumber = ADC_OFFSET_NONE,
-		.Config.Offset = 0,
-		.data = 0
-	}
+	.Config.Channel = ADC_CHANNEL_1,
+	.Config.Rank = ADC_REGULAR_RANK_1,
+	.Config.SamplingTime = ADC_SAMPLETIME_640CYCLES_5,
+	.Config.SingleDiff = ADC_SINGLE_ENDED,
+	.Config.OffsetNumber = ADC_OFFSET_NONE,
+	.Config.Offset = 0,
+	.data = 0
 };
 
 float Voltage_Ref =  3.3;
 
 //ADC Variable
 uint16_t ADC_Resolution = 1024;
-float Voltage_Read[2];
+float Voltage_Read;
 float LSB;
 
 //DAC Variable
@@ -414,15 +403,12 @@ void ADC_Read_blocking()
 
 	TimeStamp = HAL_GetTick() + 500; //500 ms delay
 
-	for(int i=0;i<2;i++)
-	{
-		HAL_ADC_ConfigChannel(&hadc1, &ADC1_Channel[i].Config);
-		HAL_ADC_Start(&hadc1);
-		HAL_ADC_PollForConversion(&hadc1, 100);
-		ADC1_Channel[i].data = HAL_ADC_GetValue(&hadc1);
-		Voltage_Read[i] = LSB * ADC1_Channel[i].data;
-		HAL_ADC_Stop(&hadc1);
-	}
+	HAL_ADC_ConfigChannel(&hadc1, &ADC1_Channel.Config);
+	HAL_ADC_Start(&hadc1);
+	HAL_ADC_PollForConversion(&hadc1, 100);
+	ADC1_Channel.data = HAL_ADC_GetValue(&hadc1);
+	Voltage_Read = LSB * ADC1_Channel.data;
+	HAL_ADC_Stop(&hadc1);
 }
 
 //DAC Function
@@ -432,7 +418,7 @@ void OutV_to_DAC()
 	GPIO_PinState B1 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
 	if (B1 == 1)
 	{
-		Voltage_Output = Voltage_Read[0];
+		Voltage_Output = Voltage_Read;
 	}
 	DAC_Output = (Voltage_Output / Voltage_Ref) * (DAC_Resolution - 1);
 }
