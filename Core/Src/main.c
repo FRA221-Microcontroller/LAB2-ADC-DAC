@@ -411,7 +411,7 @@ void ADC_Read_blocking()
 
 	if( HAL_GetTick()<TimeStamp) return;
 
-	TimeStamp = HAL_GetTick()+500;
+	TimeStamp = HAL_GetTick() + 500; //500 ms delay
 
 	for(int i=0;i<2;i++)
 	{
@@ -428,13 +428,14 @@ void ADC_Read_blocking()
 void OutV_to_DAC()
 {
 	DAC_Output = (Voltage_Output / Voltage_Ref) * (DAC_Resolution - 1);
+	Voltage_Output = DAC_Output * 0.8;
 }
 void DAC_Update()
 {
 	static uint32_t timeStamp = 0;
 	if(HAL_GetTick() > timeStamp)
 	{
-		timeStamp = HAL_GetTick() + 500;
+		timeStamp = HAL_GetTick() + 750; //500 ms delay
 		OutV_to_DAC();
 		HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, DAC_Output);
 	}
