@@ -137,7 +137,8 @@ int main(void)
   MX_ADC1_Init();
   MX_DAC1_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048);
+  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -427,8 +428,9 @@ void ADC_Read_blocking()
 //DAC Function
 void OutV_to_DAC()
 {
+//	Voltage_Output = DAC_Output * (Voltage_Ref / DAC_Resolution);
 	DAC_Output = (Voltage_Output / Voltage_Ref) * (DAC_Resolution - 1);
-	Voltage_Output = DAC_Output * 0.8;
+
 }
 void DAC_Update()
 {
