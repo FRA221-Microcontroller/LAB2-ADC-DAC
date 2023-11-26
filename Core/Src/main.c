@@ -69,7 +69,7 @@ float Voltage_Ref =  3.3;
 //ADC Variable
 uint16_t ADC_Resolution = 1024;
 float Voltage_Read;
-float LSB;
+float LSB_ADC;
 
 //DAC Variable
 uint16_t DAC_Resolution = 4096;
@@ -396,8 +396,8 @@ static void MX_GPIO_Init(void)
 //ADC Function
 void ADC_Read_blocking()
 {
+	LSB_ADC = Voltage_Ref / ADC_Resolution;
 	static uint32_t TimeStamp = 0;
-	LSB = Voltage_Ref / ADC_Resolution;
 
 	if(HAL_GetTick()<TimeStamp) return;
 
@@ -408,7 +408,7 @@ void ADC_Read_blocking()
 		HAL_ADC_Start(&hadc1);
 		HAL_ADC_PollForConversion(&hadc1, 100);
 		ADC1_Channel.data = HAL_ADC_GetValue(&hadc1);
-		Voltage_Read = LSB * ADC1_Channel.data;
+		Voltage_Read = (LSB_ADC * ADC1_Channel.data) * 1000;
 		HAL_ADC_Stop(&hadc1);
 	}
 }
@@ -416,13 +416,13 @@ void ADC_Read_blocking()
 //DAC Function
 void OutV_to_DAC()
 {
-//	Voltage_Output = DAC_Output * (Voltage_Ref / DAC_Resolution);
 	GPIO_PinState B1 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
 	if (B1 == 1)
 	{
 		Voltage_Output = Voltage_Read;
 	}
-	DAC_Output = (Voltage_Output / Voltage_Ref) * (DAC_Resolution - 1);
+	DAC_Output = ((Voltage_Output / 1000) / Voltage_Ref) * (DAC_Resolution - 1);
+//	Voltage_Output = DAC_Output * (Voltage_Ref / DAC_Resolution);
 }
 void DAC_Update()
 {
