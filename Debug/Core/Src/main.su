@@ -5,6 +5,6 @@
 ../Core/Src/main.c:312:13:MX_LPUART1_UART_Init	8	static
 ../Core/Src/main.c:359:13:MX_GPIO_Init	48	static
 ../Core/Src/main.c:397:6:ADC_Read_blocking	8	static
-../Core/Src/main.c:415:6:OutV_to_DAC	16	static
-../Core/Src/main.c:425:6:DAC_Update	8	static
-../Core/Src/main.c:441:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:417:6:OutV_to_DAC	16	static
+../Core/Src/main.c:427:6:DAC_Update	8	static
+../Core/Src/main.c:443:6:Error_Handler	4	static,ignoring_inline_asm

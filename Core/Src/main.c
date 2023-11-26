@@ -399,16 +399,18 @@ void ADC_Read_blocking()
 	static uint32_t TimeStamp = 0;
 	LSB = Voltage_Ref / ADC_Resolution;
 
-	if( HAL_GetTick()<TimeStamp) return;
+	if(HAL_GetTick()<TimeStamp) return;
 
-	TimeStamp = HAL_GetTick() + 500; //500 ms delay
-
-	HAL_ADC_ConfigChannel(&hadc1, &ADC1_Channel.Config);
-	HAL_ADC_Start(&hadc1);
-	HAL_ADC_PollForConversion(&hadc1, 100);
-	ADC1_Channel.data = HAL_ADC_GetValue(&hadc1);
-	Voltage_Read = LSB * ADC1_Channel.data;
-	HAL_ADC_Stop(&hadc1);
+	else if(HAL_GetTick() > TimeStamp)
+	{
+		TimeStamp = HAL_GetTick() + 500; //500 ms delay
+		HAL_ADC_ConfigChannel(&hadc1, &ADC1_Channel.Config);
+		HAL_ADC_Start(&hadc1);
+		HAL_ADC_PollForConversion(&hadc1, 100);
+		ADC1_Channel.data = HAL_ADC_GetValue(&hadc1);
+		Voltage_Read = LSB * ADC1_Channel.data;
+		HAL_ADC_Stop(&hadc1);
+	}
 }
 
 //DAC Function

@@ -4,7 +4,7 @@
 ../Core/Src/main.c:265:13:MX_DAC1_Init	3
 ../Core/Src/main.c:312:13:MX_LPUART1_UART_Init	5
 ../Core/Src/main.c:359:13:MX_GPIO_Init	1
-../Core/Src/main.c:397:6:ADC_Read_blocking	2
-../Core/Src/main.c:415:6:OutV_to_DAC	2
-../Core/Src/main.c:425:6:DAC_Update	2
-../Core/Src/main.c:441:6:Error_Handler	1
+../Core/Src/main.c:397:6:ADC_Read_blocking	3
+../Core/Src/main.c:417:6:OutV_to_DAC	2
+../Core/Src/main.c:427:6:DAC_Update	2
+../Core/Src/main.c:443:6:Error_Handler	1
